@@ -122,10 +122,7 @@ void dividParts(){
 
                 if(kmpMatch(pattern.substr(0,i) ) || kmpMatch(pattern.substr(i+1))) {
                     print();
-                    cout<< "Pattern found.Indexs' are :" << endl;
-                    for(int i=0;i<=Index;i++){
-                        cout << patternFoundindexArray[i] << " ";
-                    }
+                    cout<<"True"<<endl;
                 }
                 flag1=1;
                 break;
@@ -135,11 +132,9 @@ void dividParts(){
     if(flag1==0 && flag2==0){
         if(kmpMatch(pattern)){
             print();
-            cout<< "Pattern found.Indexs' are :" << endl;
-            for(int i=0;i<=Index;i++){
-                cout << patternFoundindexArray[i] << " ";
-            }
+            cout<<"True"<<endl;
         }else{
+            print();
             cout<<"Pattern not found."<<endl;
         }
     }
