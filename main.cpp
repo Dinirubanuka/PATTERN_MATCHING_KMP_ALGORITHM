@@ -7,52 +7,140 @@ int prefixArr[100];
 int patternFoundindexArray[50];
 int Index = -1;
 string pattern;
+string text;
 int patternSize;
+int textSize;
+
+void firstCharacters();
+void lastCharacters();
+void prefixFn(string);
+int kmpMatch(string text);
+void dividParts();
+
+
+void print(){
+    cout<<"string : "<<text<<endl;
+    cout<<"pattern : "<<pattern<<endl;
+}
+
+void firstCharacters(){
+    int flag=0;
+    for(int i=0;i<patternSize-1;i++){
+        if(pattern[i+1]!=text[i]){
+            flag=1;
+            break;
+        }
+    }
+    print();
+    if(flag==0){
+        cout<<"True"<<endl;
+    }else
+        cout<<"False"<<endl;
+}
+
+void lastCharacters(){
+    int flag = 0;
+    int start= textSize - patternSize +1;
+    for(int i=0;i<patternSize-1;i++){
+        if (pattern[i+1]!=text[start+i]){
+            flag=1;
+            break;
+        }
+    }
+    print();
+    if(flag==0){
+        cout<<"True"<<endl;
+    }else
+        cout<<"False"<<endl;
+}
 
 //preprocessing(prefix function)
-void prefixFn(string ptn){
-    pattern =ptn;
+void prefixFn(string pattern){
     prefixArr[1] = 0;
-    patternSize = ptn.size();
-    int k=-1;
-    for(int i=1; i < patternSize; i++){
-        while(k>-1 && ptn[k+1]!=ptn[i]){
-            k= prefixArr[k] - 1;
+    patternSize = pattern.size();
+        int k=-1;
+        for(int i=1; i < patternSize; i++){
+            while(k>-1 && pattern[k+1]!=pattern[i]){
+                k= prefixArr[k] - 1;
+            }
+            if(pattern[k+1]== pattern[i]){
+                k++;
+            }
+            prefixArr[i+1]= k + 1;
         }
-        if(ptn[k+1]== ptn[i]){
-            k++;
-        }
-        prefixArr[i+1]= k + 1;
-    }
 }
 
 //KMP ALOGORITHM
-void kmpMatch(string text){
-    int sizeText = text.size();
+int kmpMatch(string pattern){
+    prefixFn(pattern);
     int numOfmatch = 0;
     int position = -1;
 
-    for(int i=0;i<sizeText;i++){
-        while(position > -1 && pattern[position+1]!=text[i]){
-            if(prefixArr[numOfmatch]==0) {
-                position = -1;
-            }else {
-                position = prefixArr[numOfmatch]-1;
+        for(int i=0; i < textSize; i++){
+            while(position > -1 && pattern[position+1]!=text[i]){
+                if(prefixArr[numOfmatch]==0) {
+                    position = -1;
+                }else {
+                    position = prefixArr[numOfmatch]-1;
+                }
+                numOfmatch = prefixArr[numOfmatch];
             }
-            numOfmatch = prefixArr[numOfmatch];
+            if(pattern[position+1]==text[i]){
+                position++;
+                numOfmatch++;
+            }
+            if(numOfmatch==patternSize) {
+                if(prefixArr[numOfmatch]==0) {
+                    position = -1;
+                }else
+                    position=prefixArr[numOfmatch]-1;
+                numOfmatch = prefixArr[numOfmatch];
+                Index++;
+                patternFoundindexArray[Index] = i+1 - patternSize;  // if any match is found then put than index into this array
+            }
         }
-        if(pattern[position+1]==text[i]){
-            position++;
-            numOfmatch++;
+
+        if(Index ==-1){
+            return 0;
+        }else{
+            return 1;
+            }
+}
+
+void dividParts(){
+    int flag1=0;
+    int flag2=0;
+    if(pattern[0]=='^'){
+        flag2=1;
+        firstCharacters();
+    }else if(pattern[0]=='$'){
+        flag2=1;
+        lastCharacters();
+    }else{
+        for(int i=0;i<patternSize;i++){
+            if(pattern[i]=='|'){
+
+                if(kmpMatch(pattern.substr(0,i) ) || kmpMatch(pattern.substr(i+1))) {
+                    print();
+                    cout<< "Pattern found.Indexs' are :" << endl;
+                    for(int i=0;i<=Index;i++){
+                        cout << patternFoundindexArray[i] << " ";
+                    }
+                }
+                flag1=1;
+                break;
+            }
         }
-        if(numOfmatch==patternSize) {
-            if(prefixArr[numOfmatch]==0) {
-                position = -1;
-            }else
-                position=prefixArr[numOfmatch]-1;
-            numOfmatch = prefixArr[numOfmatch];
-            Index++;
-            patternFoundindexArray[Index] = i+1 - patternSize;  // if any match is found then put than index into this array
+    }
+    if(flag1==0 && flag2==0){
+        if(kmpMatch(pattern)){
+            print();
+            cout<< "Pattern found.Indexs' are :" << endl;
+            for(int i=0;i<=Index;i++){
+                cout << patternFoundindexArray[i] << " ";
+            }
+        }else{
+            cout<<"Pattern not found."<<endl;
         }
     }
 }
@@ -66,7 +154,7 @@ int main(){
     if (myPattern.is_open()){
         string line;
         while (getline(myPattern,line)){
-            prefixFn(line);
+            pattern = line;
         }
         myPattern.close();
     }
@@ -76,16 +164,11 @@ int main(){
     if(myFile.is_open()){
         string  line;
         while(getline(myFile,line)){
-            kmpMatch(line);
+            text = line;
         }
         myFile.close();
     }
-    if(Index ==-1){
-        cout<< "Pattern not found in text."<<endl;
-    }else{
-        cout<< "Pattern found.Indexs' are :" << endl;
-        for(int i=0;i<=Index;i++){
-            cout << patternFoundindexArray[i] << " ";
-        }
-    }
+    patternSize = pattern.size();
+    textSize = text.size();
+    dividParts();
 }
