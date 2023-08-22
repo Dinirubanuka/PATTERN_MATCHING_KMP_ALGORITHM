@@ -7,7 +7,8 @@ First, go to the [C++ code](main.cpp) .You can run it using your own test cases 
 You can change this text file name to your own file name.
 
 file handling part.
-myPattern.open("pattern1.txt",ios::in); // read pattern
+
+    myPattern.open("pattern1.txt",ios::in); // read pattern
     if (myPattern.is_open()){
         string line;
         while (getline(myPattern,line)){
@@ -29,7 +30,7 @@ myPattern.open("pattern1.txt",ios::in); // read pattern
 ## Methodology
 I use the `Knuth-Morris-Pratt (KMP)` algorithm to implement this and filter the pattern using simple if statements. Also, the matching condition is called to the relevant function, and the output is given as a Boolean value.
 
-void dividParts(){
+    void dividParts(){
     int flag1=0;
     int flag2=0;
     if(pattern[0]=='^'){
@@ -59,8 +60,8 @@ void dividParts(){
             print();
             cout<<"Pattern not found."<<endl;
         }
-    }
-}
+     }
+    }   
 
 In this version, the program recognizes `^` `|` `$` as the regex character.
 
